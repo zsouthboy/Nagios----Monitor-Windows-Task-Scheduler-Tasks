@@ -1,0 +1,32 @@
+2010-11-01
+
+Have a Windows task that ends up failing sometimes?
+This script will help you monitor your other scripts/tasks that run on Windows boxes.
+
+
+Python 2.x is required. Tested on 2.6.
+Windows 2003R2 has been tested.
+Should work on both 32 and 64bit versions of both.
+Any Nagios version should work.
+
+To use:
+
+Copy the script into your NSClient++ scripts directory (Python 2.x is required) on the box you wish to monitor the tasks.
+
+Edit the DICT_OF_TASKS dictionary at the beginning of the file to add the names of your tasks and the number of minutes in which they have not successfully run (exit code 0x0):
+*Use the name, spaces and all, that is set in Task Scheduler
+*You can use `schtasks /query /v /fo csv` to get a comma-separated list of your tasks from Task Scheduler
+
+Edit your NSC.ini file to allow Nagios to invoke the script:
+*Inside the [NRPE Handlers] section
+*Add a line with the name you wish to use on the Nagios side, e.g. check_glue_scripts_via_tsched
+*Set that line equal to scripts\check_windows_tasks_via_taskscheduler.py
+**If python is not in your PATH, you probably need to call it explicitly like so:
+**c:\python26\python.exe scripts\check_glue_scripts_via_tshed.py
+
+Nagios configuration (XI and open source version):
+(this will vary according to your own Nagios configuration)
+*Add a service for your client box that uses NRPE to invoke the name you set earlier, check_glue_scripts_via_tsched for example
+*No arguments are necessary to launch the script since your configuration has been done host-side
+
+This script is being used in production and seems to work well, but YMMV and I am not responsible if anything goes wrong.
